@@ -9,12 +9,14 @@ const db = require("../db"),
 exports.register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
+  const mail = email.toLowerCase();
+
   try {
     const hashedPassword = await hash(password, 10);
 
     await db.query(
-      "INSERT INTO users (firstName,lastName,email,password) values($1,$2,$3,$4)",
-      [firstName, lastName, email, hashedPassword]
+      "INSERT INTO users (first_name,last_name,email,password) values($1,$2,$3,$4)",
+      [firstName, lastName, mail, hashedPassword]
     );
 
     return res.status(201).json({
@@ -30,6 +32,7 @@ exports.register = async (req, res) => {
 };
 
 // Login a User
+
 
 // Protected Routes Access
 

@@ -1,23 +1,38 @@
 import "./UserStyles.scss";
-import { Button, FormHelperText, Grid, TextField } from "@mui/material";
+import { Button, FormHelperText, Grid, Paper, TextField } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { url } from "../../navigation/CONSTANTS";
+import { onRegistration } from "../../api";
 
 const UserAuthPage = () => {
   const [signIn, setSignIn] = useState(false);
+  const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const userSignIn = (data, { resetForm }) => {
-    const { email, password } = data;
+  const userSignIn = async (data, { resetForm }) => {
+    // const { email, password } = data;
 
-    console.log(email, password);
+    try {
+      // await onLogin()
+    } catch (error) {}
   };
 
-  const registerUser = (data, { resetForm }) => {};
+  const registerUser = async (regData, { resetForm }) => {
+    try {
+      const { data } = await onRegistration(regData);
+      setError("");
+      setSuccess(data.message);
+    } catch (error) {
+      console.log(error);
+      setError(error.response.data.message);
+      setSuccess("");
+    }
+  };
 
   useEffect(() => {
     if (location.pathname === "/login") {
@@ -25,7 +40,8 @@ const UserAuthPage = () => {
     } else {
       setSignIn(false);
     }
-  }, [location]);
+    if (success) setTimeout(navigate(url.DASHBOARD), 2000);
+  }, [location, navigate, success]);
 
   return (
     <div className="container">
@@ -205,6 +221,8 @@ const UserAuthPage = () => {
                 </Grid>
               </Form>
             </Formik>
+            <Paper sx={{ color: "green", margin: "10px 0" }}>{success}</Paper>
+            <Paper sx={{ color: "red", margin: "1rem 1.5rem" }}>{error}</Paper>
           </div>
         )}
       </main>

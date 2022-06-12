@@ -8,7 +8,11 @@ import {
 } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { url } from "./CONSTANTS";
-import UserAuthPage from "../pages/userAuth/UserAuthPage";
+
+const UserAuthPage = lazy(() => import("../pages/userAuth/UserAuthPage"));
+const HomePage = lazy(() => import("../pages/homepage/HomePage"));
+const Loading = lazy(() => import("./Loading"));
+const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
 
 const PrivateRoutes = () => {
   const { isAuth } = useSelector((state) => state.auth);
@@ -25,12 +29,19 @@ const RestrictedRoutes = () => {
 const RouterConfig = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<RestrictedRoutes />}>
-          <Route path={url.REGISTER} element={<UserAuthPage />} />
-          <Route path={url.LOGIN} element={<UserAuthPage />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path={url.HOME} element={<HomePage />} />
+          <Route element={<PrivateRoutes />}>
+            <Route path={url.DASHBOARD} element={<DashboardPage />} />
+          </Route>
+
+          <Route element={<RestrictedRoutes />}>
+            <Route path={url.REGISTER} element={<UserAuthPage />} />
+            <Route path={url.LOGIN} element={<UserAuthPage />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 };
