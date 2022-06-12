@@ -1,7 +1,8 @@
 import "./App.css";
+import RouterConfig from "./navigation/RouterConfig";
 
 function App() {
-  return <div>App js</div>;
+  return <RouterConfig />;
 }
 
 export default App;

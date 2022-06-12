@@ -2,10 +2,14 @@ import "./UserStyles.scss";
 import { Button, FormHelperText, Grid, TextField } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { url } from "../../navigation/CONSTANTS";
 
-const UserSlice = () => {
+const UserAuthPage = () => {
   const [signIn, setSignIn] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const userSignIn = (data, { resetForm }) => {
     const { email, password } = data;
@@ -14,6 +18,14 @@ const UserSlice = () => {
   };
 
   const registerUser = (data, { resetForm }) => {};
+
+  useEffect(() => {
+    if (location.pathname === "/login") {
+      setSignIn(true);
+    } else {
+      setSignIn(false);
+    }
+  }, [location]);
 
   return (
     <div className="container">
@@ -208,7 +220,7 @@ const UserSlice = () => {
               padding: "1em 3.5em",
             }}
             onClick={() => {
-              setSignIn(true);
+              navigate(url.LOGIN);
             }}
           >
             Login
@@ -226,7 +238,7 @@ const UserSlice = () => {
               padding: "1em 3.5em",
             }}
             onClick={() => {
-              setSignIn(false);
+              navigate(url.REGISTER);
             }}
           >
             Create Account
@@ -237,7 +249,7 @@ const UserSlice = () => {
   );
 };
 
-export default UserSlice;
+export default UserAuthPage;
 
 const signInSchema = Yup.object().shape({
   email: Yup.string()
