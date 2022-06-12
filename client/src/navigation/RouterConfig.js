@@ -8,16 +8,16 @@ import {
 } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { url } from "./CONSTANTS";
+import Loading from "./Loading";
 
+const AppLayout = lazy(() => import("./Layout/AppLayout"));
 const UserAuthPage = lazy(() => import("../pages/userAuth/UserAuthPage"));
-const HomePage = lazy(() => import("../pages/homepage/HomePage"));
-const Loading = lazy(() => import("./Loading"));
 const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
 
 const PrivateRoutes = () => {
   const { isAuth } = useSelector((state) => state.auth);
 
-  return <>{!isAuth ? <Outlet /> : <Navigate to={url.LOGIN} />}</>;
+  return <>{isAuth ? <Outlet /> : <Navigate to={url.LOGIN} />}</>;
 };
 
 const RestrictedRoutes = () => {
@@ -31,9 +31,16 @@ const RouterConfig = () => {
     <BrowserRouter>
       <Suspense fallback={<Loading />}>
         <Routes>
-          <Route path={url.HOME} element={<HomePage />} />
+          <Route path={url.HOME} element={<Navigate to={url.LOGIN} />} />
           <Route element={<PrivateRoutes />}>
-            <Route path={url.DASHBOARD} element={<DashboardPage />} />
+            <Route
+              path={url.DASHBOARD}
+              element={
+                <AppLayout>
+                  <DashboardPage />
+                </AppLayout>
+              }
+            />
           </Route>
 
           <Route element={<RestrictedRoutes />}>
