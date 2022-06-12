@@ -4,22 +4,30 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { url } from "../../navigation/CONSTANTS";
-import { onRegistration } from "../../api";
+import { onRegistration, onLogin } from "../../api";
+import { authenticateUser } from "../../redux/slices/authSlice";
 
 const UserAuthPage = () => {
   const [signIn, setSignIn] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
   const userSignIn = async (data, { resetForm }) => {
-    // const { email, password } = data;
+    const { email, password } = data;
 
     try {
-      // await onLogin()
-    } catch (error) {}
+      await onLogin({ email, password });
+      dispatch(authenticateUser());
+
+      localStorage.setItem("isAuth", "true");
+    } catch (error) {
+      setError(error.response.data.message);
+    }
   };
 
   const registerUser = async (regData, { resetForm }) => {
@@ -40,7 +48,7 @@ const UserAuthPage = () => {
     } else {
       setSignIn(false);
     }
-    if (success) setTimeout(navigate(url.DASHBOARD), 2000);
+    if (success) setTimeout(navigate(url.DASHBOARD), 2000); //This might be creating many calls to history API [12/06/2022_einbulinda]
   }, [location, navigate, success]);
 
   return (
@@ -108,6 +116,8 @@ const UserAuthPage = () => {
                 </Grid>
               </Form>
             </Formik>
+            <Paper sx={{ color: "green", margin: "10px 0" }}>{success}</Paper>
+            <Paper sx={{ color: "red", margin: "1rem 1.5rem" }}>{error}</Paper>
           </div>
         ) : (
           <div className="form signUpForm">
