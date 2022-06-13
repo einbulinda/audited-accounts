@@ -13,7 +13,7 @@ export const sidebarLinks = [
     icon: DashboardIcon,
   },
   {
-    path: url.PROFILE,
+    path: url.ADD_PROFILE,
     title: "Add Profile",
     icon: AssignmentIndIcon,
   },

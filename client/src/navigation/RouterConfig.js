@@ -10,9 +10,11 @@ import { useSelector } from "react-redux";
 import { url } from "./CONSTANTS";
 import Loading from "./Loading";
 
-const AppLayout = lazy(() => import("./Layout/AppLayout"));
-const UserAuthPage = lazy(() => import("../pages/userAuth/UserAuthPage"));
-const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
+const NotFound = lazy(() => import("navigation/NotFound/NotFound"));
+const AppLayout = lazy(() => import("navigation/Layout/AppLayout"));
+const UserAuthPage = lazy(() => import("pages/userAuth/UserAuthPage"));
+const DashboardPage = lazy(() => import("pages/dashboard/DashboardPage"));
+const AddProfile = lazy(() => import("pages/profile/AddProfile"));
 
 const PrivateRoutes = () => {
   const { isAuth } = useSelector((state) => state.auth);
@@ -31,9 +33,10 @@ const RouterConfig = () => {
     <BrowserRouter>
       <Suspense fallback={<Loading />}>
         <Routes>
-          <Route path={url.HOME} element={<Navigate to={url.LOGIN} />} />
-          <Route element={<PrivateRoutes />}>
+          <Route exact path={url.HOME} element={<Navigate to={url.LOGIN} />} />
+          <Route exact element={<PrivateRoutes />}>
             <Route
+              exact
               path={url.DASHBOARD}
               element={
                 <AppLayout>
@@ -41,12 +44,15 @@ const RouterConfig = () => {
                 </AppLayout>
               }
             />
+            <Route exact path={url.ADD_PROFILE} element={<AddProfile />} />
           </Route>
 
-          <Route element={<RestrictedRoutes />}>
-            <Route path={url.REGISTER} element={<UserAuthPage />} />
-            <Route path={url.LOGIN} element={<UserAuthPage />} />
+          <Route exact element={<RestrictedRoutes />}>
+            <Route exact path={url.REGISTER} element={<UserAuthPage />} />
+            <Route exact path={url.LOGIN} element={<UserAuthPage />} />
           </Route>
+          {/* Catch All Route */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
